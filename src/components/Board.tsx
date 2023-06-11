@@ -4,6 +4,7 @@ import Card from "@/components/Card";
 import "@/scss/board.scss";
 
 type BoardProps = {
+  setMoves: any;
   cardIds: Array<number>;
 };
 const Board = (props: BoardProps) => {
@@ -21,8 +22,8 @@ const Board = (props: BoardProps) => {
   const [shouldDisableAllCards, setShouldDisableAllCards] =
     useState<boolean>(false);
 
-  const timeout = useRef(setTimeout(() => {}));
-
+  //   const timeout = useRef(setTimeout(() => {}));
+  const timeout = useRef<number | null>(null);
   const disable = () => {
     setShouldDisableAllCards(true);
   };
@@ -49,23 +50,25 @@ const Board = (props: BoardProps) => {
   };
 
   useEffect(() => {
-    let timeout = setTimeout(() => {});
+    let evaluteTimeout: number | undefined;
     if (openCards.length === 2) {
-        timeout = setTimeout(evalute, 300);
+      evaluteTimeout = setTimeout(evalute, 300);
     }
     return () => {
-        clearTimeout(timeout);
-    }
-  },[openCards])
+      clearTimeout(evaluteTimeout);
+    };
+  }, [openCards]);
 
   useEffect(() => {
-    if (clearedCards.length === props.cardIds.length){
-        console.log("game over!")
+    if (clearedCards.length === props.cardIds.length) {
+      console.log("game over!");
     }
-  },[clearedCards])
+  }, [clearedCards]);
+
   const handleCardClick = (id: number) => {
     if (openCards.length === 1) {
       setOpenCards((prev) => [...prev, id]);
+      props.setMoves((moves: number) => moves+1 )
       disable();
     } else {
       setOpenCards([id]);
